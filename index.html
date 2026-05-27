@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dial Stop</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090a12;
+      --panel: #121422;
+      --text: #f7f7fb;
+      --muted: #a6a8b8;
+      --gold: #ffd700;
+      --pink: #ff3da5;
+      --cyan: #36b7f6;
+      --green: #18d4a2;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 50% 30%, #1b1d31 0, var(--bg) 58%);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 32px 18px;
+    }
+
+    main {
+      width: min(760px, 100%);
+      text-align: center;
+    }
+
+    .dial {
+      width: min(300px, 76vw);
+      aspect-ratio: 1;
+      margin: 0 auto 28px;
+      border-radius: 34px;
+      background: linear-gradient(145deg, #202234, #0d0f1c);
+      position: relative;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .ring {
+      position: absolute;
+      inset: 54px;
+      border-radius: 50%;
+      border: 18px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .arc {
+      position: absolute;
+      width: 122px;
+      height: 122px;
+      border-radius: 50%;
+      border: 18px solid transparent;
+    }
+
+    .arc.gold { inset: 42px 74px auto auto; border-top-color: var(--gold); transform: rotate(16deg); }
+    .arc.cyan { inset: 92px auto auto 42px; border-left-color: var(--cyan); transform: rotate(22deg); }
+    .arc.pink { inset: auto auto 42px 73px; border-bottom-color: var(--pink); transform: rotate(-10deg); }
+    .arc.green { inset: auto 42px 58px auto; border-right-color: var(--green); transform: rotate(18deg); }
+
+    .needle {
+      position: absolute;
+      width: 112px;
+      height: 9px;
+      left: 78px;
+      top: 145px;
+      border-radius: 999px;
+      background: var(--pink);
+      transform: rotate(16deg);
+      transform-origin: right center;
+      box-shadow: 0 0 18px rgba(255, 61, 165, 0.35);
+    }
+
+    .needle::before {
+      content: "";
+      position: absolute;
+      left: -17px;
+      top: -13px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--pink);
+    }
+
+    .hub {
+      position: absolute;
+      left: calc(50% - 16px);
+      top: calc(50% - 16px);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 4px 18px rgba(255, 255, 255, 0.2);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 10vw, 72px);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 18px auto 0;
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.55;
+    }
+
+    nav {
+      margin-top: 30px;
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    a {
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      padding: 11px 16px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="dial" aria-hidden="true">
+      <div class="ring"></div>
+      <div class="arc gold"></div>
+      <div class="arc cyan"></div>
+      <div class="arc pink"></div>
+      <div class="arc green"></div>
+      <div class="needle"></div>
+      <div class="hub"></div>
+    </div>
+    <h1>Dial Stop</h1>
+    <p>A fast one-tap arcade game about timing, color matching, coins, and chasing one more perfect stop.</p>
+    <nav>
+      <a href="support.html">Support</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </nav>
+  </main>
+</body>
+</html>
