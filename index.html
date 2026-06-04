@@ -3,91 +3,580 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Dial Stop is a one-tap arcade timing game about matching colors, earning coins, unlocking palettes, and climbing Game Center leaderboards.">
   <title>Dial Stop</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <style>
     :root {
       color-scheme: dark;
-      --bg: #090a12;
-      --panel: #121422;
-      --text: #f7f7fb;
-      --muted: #a6a8b8;
+      --bg: #0f0f1a;
+      --bg-soft: #151623;
+      --panel: rgba(255, 255, 255, 0.06);
+      --panel-strong: rgba(255, 255, 255, 0.1);
+      --line: rgba(255, 255, 255, 0.14);
+      --text: #fbfbff;
+      --muted: #a9abbc;
+      --dim: #75788e;
       --gold: #ffd700;
       --pink: #ff3da5;
       --cyan: #36b7f6;
       --green: #18d4a2;
+      --orange: #f29a24;
+      --shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
     }
 
     * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
       min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at 50% 30%, #1b1d31 0, var(--bg) 58%);
+      background:
+        radial-gradient(circle at 20% 12%, rgba(54, 183, 246, 0.13), transparent 28%),
+        radial-gradient(circle at 86% 22%, rgba(255, 61, 165, 0.11), transparent 26%),
+        linear-gradient(180deg, #121321 0%, var(--bg) 42%, #090a12 100%);
       color: var(--text);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 22px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand img {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav a,
+    .button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 15px;
+      background: rgba(255, 255, 255, 0.045);
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 14px;
+      font-weight: 700;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .nav a:hover,
+    .button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .hero {
       display: grid;
-      place-items: center;
-      padding: 32px 18px;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 390px);
+      align-items: center;
+      gap: clamp(34px, 7vw, 88px);
+      min-height: calc(100vh - 86px);
+      padding: 24px 0 70px;
     }
 
-    main {
-      width: min(760px, 100%);
-      text-align: center;
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 18px;
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
     }
 
-    .app-icon {
-      width: min(300px, 76vw);
-      aspect-ratio: 1;
-      margin: 0 auto 28px;
-      border-radius: 22%;
-      display: block;
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 22px rgba(255, 215, 0, 0.72);
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(42px, 10vw, 72px);
+      max-width: 760px;
+      font-size: clamp(48px, 8vw, 88px);
       line-height: 0.95;
       letter-spacing: 0;
     }
 
-    p {
-      margin: 18px auto 0;
-      max-width: 560px;
+    .hero-copy {
+      margin: 22px 0 0;
+      max-width: 620px;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.55;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .button.primary {
+      color: #11121b;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--gold), #ffad1f);
+      box-shadow: 0 16px 44px rgba(255, 191, 31, 0.18);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 38px;
+      max-width: 610px;
+    }
+
+    .stat {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--dim);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .phone-wrap {
+      position: relative;
+      width: min(390px, 86vw);
+      margin: 0 auto;
+    }
+
+    .app-icon {
+      position: absolute;
+      right: -18px;
+      top: -24px;
+      width: 96px;
+      height: 96px;
+      border-radius: 22%;
+      z-index: 3;
+      box-shadow: var(--shadow);
+    }
+
+    .phone {
+      position: relative;
+      border-radius: 44px;
+      padding: 12px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04));
+      box-shadow: var(--shadow);
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .phone img {
+      display: block;
+      width: 100%;
+      border-radius: 34px;
+      background: #10111d;
+    }
+
+    section {
+      padding: 72px 0;
+    }
+
+    .section-head {
+      max-width: 720px;
+      margin-bottom: 28px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 54px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 16px 0 0;
       color: var(--muted);
       font-size: 18px;
       line-height: 1.55;
     }
 
-    nav {
-      margin-top: 30px;
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
+    .feature-grid,
+    .walkthrough {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
     }
 
-    a {
-      color: var(--text);
-      text-decoration: none;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+    .card,
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, var(--panel-strong), var(--panel));
+      padding: 22px;
+      min-height: 190px;
+    }
+
+    .card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      background: var(--green);
+      box-shadow: 0 14px 34px rgba(24, 212, 162, 0.16);
+    }
+
+    .card:nth-child(2) .card-icon { background: var(--pink); }
+    .card:nth-child(3) .card-icon { background: var(--cyan); }
+    .card:nth-child(4) .card-icon { background: var(--orange); }
+    .card:nth-child(5) .card-icon { background: var(--gold); }
+    .card:nth-child(6) .card-icon { background: #8b5cf6; }
+
+    .card h3,
+    .step h3 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .card p,
+    .step p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .walkthrough {
+      counter-reset: steps;
+    }
+
+    .step {
+      position: relative;
+      min-height: 220px;
+      overflow: hidden;
+    }
+
+    .step::before {
+      counter-increment: steps;
+      content: "0" counter(steps);
+      display: inline-grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin-bottom: 24px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--gold);
+      font-weight: 900;
+    }
+
+    .mini-dial {
+      position: absolute;
+      right: -22px;
+      bottom: -26px;
+      width: 132px;
+      height: 132px;
+      border-radius: 50%;
+      border: 12px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .mini-dial::before,
+    .mini-dial::after {
+      content: "";
+      position: absolute;
       border-radius: 999px;
-      padding: 11px 16px;
-      background: rgba(255, 255, 255, 0.04);
+      transform-origin: center;
+    }
+
+    .mini-dial::before {
+      width: 74px;
+      height: 10px;
+      left: 26px;
+      top: 55px;
+      background: var(--pink);
+      transform: rotate(24deg);
+    }
+
+    .mini-dial::after {
+      width: 22px;
+      height: 22px;
+      left: 82px;
+      top: 40px;
+      background: var(--green);
+      box-shadow: 0 0 0 8px rgba(24, 212, 162, 0.12);
+    }
+
+    .cta {
+      margin: 72px 0 44px;
+      padding: clamp(26px, 5vw, 42px);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background:
+        linear-gradient(135deg, rgba(255, 215, 0, 0.12), transparent 42%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.045));
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .cta h2 {
+      font-size: clamp(30px, 4vw, 44px);
+    }
+
+    .cta p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    footer {
+      padding: 28px 0 42px;
+      color: var(--dim);
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    footer a {
+      color: rgba(255, 255, 255, 0.7);
+      margin-left: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+        min-height: auto;
+        padding-top: 30px;
+      }
+
+      .hero-copy,
+      .section-head {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .actions,
+      .topbar {
+        justify-content: center;
+      }
+
+      .topbar {
+        flex-direction: column;
+      }
+
+      .stats,
+      .feature-grid,
+      .walkthrough,
+      .cta {
+        grid-template-columns: 1fr;
+      }
+
+      .phone-wrap {
+        width: min(360px, 88vw);
+      }
+
+      .app-icon {
+        right: -4px;
+        width: 82px;
+        height: 82px;
+      }
+
+      .cta {
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
-  <main>
-    <img class="app-icon" src="app-icon.png" alt="Dial Stop app icon">
-    <h1>Dial Stop</h1>
-    <p>A fast one-tap arcade game about timing, color matching, coins, and chasing one more perfect stop.</p>
-    <nav>
+  <header class="shell topbar">
+    <a class="brand" href="#top" aria-label="Dial Stop home">
+      <img src="app-icon.png" alt="">
+      <span>Dial Stop</span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#walkthrough">Walkthrough</a>
+      <a href="#features">Features</a>
+      <a href="support.html">Support</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="shell hero">
+      <div>
+        <p class="eyebrow">One tap. One full spin. No excuses.</p>
+        <h1>Stop the dial on the right color.</h1>
+        <p class="hero-copy">Dial Stop is a fast arcade timing game built around clean color matching, moving targets, coin rewards, palette unlocks, and Game Center high scores.</p>
+        <div class="actions">
+          <a class="button primary" href="https://apps.apple.com/us/app/dialstop/id6772036082?uo=4">View on the App Store</a>
+          <a class="button" href="#walkthrough">See how it plays</a>
+        </div>
+        <div class="stats" aria-label="Game highlights">
+          <div class="stat">
+            <strong>1 tap</strong>
+            <span>simple controls</span>
+          </div>
+          <div class="stat">
+            <strong>25</strong>
+            <span>coins to continue</span>
+          </div>
+          <div class="stat">
+            <strong>GC</strong>
+            <span>friend scores</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="phone-wrap" aria-label="Dial Stop app preview">
+        <img class="app-icon" src="app-icon.png" alt="Dial Stop app icon">
+        <div class="phone">
+          <img src="screenshots/walkthrough-menu.png" alt="Dial Stop main screen showing the dial, palette shop, and leaderboard buttons">
+        </div>
+      </div>
+    </section>
+
+    <section class="shell" id="walkthrough">
+      <div class="section-head">
+        <h2>How a round works</h2>
+        <p>The game is built to be understood instantly, then get sharper every round. Match the needle color to the same color on the ring before it completes a full lap.</p>
+      </div>
+
+      <div class="walkthrough">
+        <article class="step">
+          <h3>Watch the needle color</h3>
+          <p>The dot on the dial shows the color you need to hit. The matching segment is always somewhere on the circle.</p>
+          <span class="mini-dial" aria-hidden="true"></span>
+        </article>
+        <article class="step">
+          <h3>Tap at the exact moment</h3>
+          <p>Stop on the matching color to score. Hit the small gold zone to earn a coin and bonus points.</p>
+          <span class="mini-dial" aria-hidden="true"></span>
+        </article>
+        <article class="step">
+          <h3>Keep the streak alive</h3>
+          <p>The dial speeds up, palettes change the vibe, and Game Center lets you compare high scores with friends.</p>
+          <span class="mini-dial" aria-hidden="true"></span>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell" id="features">
+      <div class="section-head">
+        <h2>Built for quick retries</h2>
+        <p>Everything in Dial Stop is tuned around fast decisions, readable colors, and that one-more-round feeling.</p>
+      </div>
+
+      <div class="feature-grid">
+        <article class="card">
+          <div class="card-icon" aria-hidden="true"></div>
+          <h3>Color-matching skill</h3>
+          <p>The target color changes every round, so every tap is a fresh timing read.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" aria-hidden="true"></div>
+          <h3>Moving gold zone</h3>
+          <p>Gold hits reward coins, but the prize zone moves inside the target arc.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" aria-hidden="true"></div>
+          <h3>Palette shop</h3>
+          <p>Unlock clean, neon, cosmic, and premium palette styles with coins.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" aria-hidden="true"></div>
+          <h3>Continue option</h3>
+          <p>Spend coins or watch a rewarded ad to continue after a missed stop.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" aria-hidden="true"></div>
+          <h3>Game Center scores</h3>
+          <p>See friend high scores and invite more people straight from the leaderboard screen.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" aria-hidden="true"></div>
+          <h3>No account required</h3>
+          <p>Coins and best score are saved locally on-device, with Game Center available for scores.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell">
+      <div class="cta">
+        <div>
+          <h2>Ready to chase the perfect stop?</h2>
+          <p>Jump in, hit the gold, unlock the palette you want, and climb the leaderboard one tap at a time.</p>
+        </div>
+        <a class="button primary" href="https://apps.apple.com/us/app/dialstop/id6772036082?uo=4">Open App Store</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="shell">
+    <span>Copyright 2026 Dial Stop. All rights reserved.</span>
+    <span>
       <a href="support.html">Support</a>
       <a href="privacy.html">Privacy Policy</a>
-    </nav>
-  </main>
+    </span>
+  </footer>
 </body>
 </html>
